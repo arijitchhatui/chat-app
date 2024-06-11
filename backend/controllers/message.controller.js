@@ -26,6 +26,12 @@ export const sendMessage  = async (req, res) => {
             conversation.messages.push(newMessage._id);
         }
        await Promise.all([conversation.save(), newMessage.save()]);
+
+       const receiverSocketId = getReceiverSocketId(receiverId);
+       if(receiverId){
+        io.to(receiverSocketId).emit( "newMessage", newMessage);
+       }
+
         res.status(201).json(newMessage);
         
     } catch (error) {
